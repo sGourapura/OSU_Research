@@ -1,7 +1,7 @@
 
-totGens=30
-nPop=5
-dest=Run6_4.9.19_nPop5_mean500_std250
+totGens=15
+nPop=2
+dest=Run6_4.11.19_nPop1_mean500_std250
 gifName="MutMod10_nPop20_mean500_std250.gif"
 gifFPS=4
 
