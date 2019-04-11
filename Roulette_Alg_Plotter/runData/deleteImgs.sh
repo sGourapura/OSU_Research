@@ -1,0 +1,1 @@
+find -maxdepth 1 -name FScore\* -delete

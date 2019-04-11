@@ -1,0 +1,1 @@
+Current date and time using strftime:2018-12-06 17:57

@@ -1,0 +1,89 @@
+Suren's Winter Break Code-Hunting Results
+
+Notation:	numbered lines are comments about a specific file
+		asterisk denotes things that need to be changed/looked into
+ 		there is a To Do list at the bottom
+
+
+1. maxFitnessScores.cpp holds the maximum fitness scores from each generation by appending it onto the list. *Needs to be deleted before each run of XFLoop.sh, otherwise, it will keep the previous run's best scores above the new run.
+
+2. gensData.csv holds the top four "matrices" for each generation by appending it onto the list. The "matrices" are the characteristics radius, length, and angle, in that order. 
+
+3. The original gensData.cpp has a number of problems. These are irrelevant if the python version is used. Skip reading all of comment 3 if there is no interest in performing "legacy updating". 
+Here are the cpp version's problems:
+*The loop:
+    for(int i = 0; i < 5; i++)
+    {
+        getline(file, geneticDataElement);
+        geneticData.push_back(geneticDataElement);
+    }
+Needs to go to: i<11.
+And *the loop:
+    if (file3.is_open())
+    {
+        for(int i = 0; i < 5; i++)
+        {
+            file3 << geneticData[i] << "\n";
+        }
+
+        file3.close();
+    }
+Needs to go to: i<11.
+The extra element comes from copying the string "Matrices for this Generation: " as the first element of geneticData.
+*The loops:
+    for(int i = 0; i < 5; i++)
+    {
+        getline(file2, geneticFitnessElement);
+        geneticFitness.push_back(geneticFitnessElement);
+    }
+
+    for(int i = 0; i < 5; i++)
+    {
+        geneticFitnessDoubleElement = atof(geneticFitness[i].c_str());
+        geneticFitnessDouble.push_back(geneticFitnessDoubleElement);
+    }
+
+    maxFitnessScores = geneticFitnessDouble[0];
+    for(int i = 1; i < 5; i++)
+    {
+        if(geneticFitnessDouble[i] > maxFitnessScores)
+        {
+            maxFitnessScores = geneticFitnessDouble[i];
+        }
+    }
+All need to go to: i<10. I suggest three levels of fixing these problems:
+Do what I suggested and simply change these numbers.
+Create a variable called NPOP at the top of the code that can be easily adjusted in the future.
+Make the population variable dynamic and fed by the bash script.
+
+4. gensData.py is ready to go! In the bash script, *do the following replacement:
+./gensData.exe -> python gensData.py i
+where i signifies the generation number it is being run for. The first location in the script, it will be 0. In the loop, it will be $gen. Also, *replace every instance of gensData.csv with runData.csv. This new file stores not only the DNA for each individual for each generation, but also the associated fitness score (and it's more organized). That way, it is easy to look back and find the geometry of the most successful antenna. Finally, *move the file to the run folder when the loop is complete
+
+5. roulette_algorithm.cpp have a few mislabeled variables, according to the description of the process in the code's comments. If Chromosomes are segments and genes are traits (like length, radius, etc.), the algorithm currently only uses one segment. So, the constants used in the code are the names of genes, not chromosomes.
+*Need to change 
+INITIAL_MEAN_C2_G1 	-> INITIAL_MEAN_C1_G2
+INITIAL_STD_DVN_C2_G1 	-> INITIAL_STD_DVN_C1_G2
+INITIAL_MEAN_C3_G1 	-> INITIAL_MEAN_C1_G3
+INITIAL_STD_DVN_C3_G1 	-> INITIAL_STD_DVN_C1_G3
+C1_G1 doesn't need to be changed, as switching 1 with 1 gives the same variable name. To be clear, the code works FINE the way it is now, but the comments don't reflect these variable names, that's all.
+
+6. highfive.txt holds a 0 if the loop has not converged. it is rewritten to 1 by roulette_algorithm.exe if the loop has converged. I believe this is written out so that if the loop ends, the user has a way to tell if the algorithm has converged or not. It could just as easily be written to the terminal, but then if the terminal history is lost, the result is still permanently available. The file will be made by roulette_algorithm.exe every time the loop has converged, and is never read by it or any other file (as far as I know). For consistency's sake, I suggest *we recreate and keep the file in the Evolutionary_Loop folder, and when the loop is done, the bash script moves and renames it inside each run folder. Perhaps, it can be appended to the date and time text file?
+
+7. datasize.txt is calculated by roulette_algorithm.exe each time it is run. It sums all of the lengths for each generation, divides by NPOP, and then divides by 50. Somehow, the average length / 50 is a good scale number for the grid size? Anyways, this file is created by roulette_algorithm.exe if it isn't already there. This file is needed to create the simulation_PEC.xmacro file, and it provides the gridsize. I suggest *we rename this file to gridScale.txt, or something similar so that it is not confused with some size measurement of the data matrix. Also, we should either move this file to the results folder when the loop is done or delete it when the loop is done (if we think the last generation's gridsize is useless data, which I do).
+
+8. generationDNA.csv holds the radius, length, and angle (each in columns) of each individual (each in rows) in the current generation. The delimited string of numbers above it is a bit confusing, so I found it in the code and think it's documentation is important. These numbers are the frequencies (in GHz) tested on all individuals of all generations. These values are fixed in the code by the variables: MINIMUM_FREQUENCY, MAXIMUM_FREQUENCY, and FREQ_STEP. The math in roulette_algorithm.exe that generates the frequencies using this simply starts with MINIMUM_FREQUENCY and keeps adding FREQ_STEP until it reaches or is just below MAXIMUM_FREQUENCY.
+
+
+*To Do:
+Delete maxFitnessScores.cpp before running gensData.exe
+Replace number variables in gensData.cpp (strictly optional, it would be nice to have a working copy, but this file is being replaced anyways)
+Implement gensData.py in bash script
+Replace every instance of gensData.csv with runData.csv
+Move the runData.csv to the run folder at the end of the bash script
+Rewrite comments for Fitness Score Generation (E)
+Write source file's name for new plotting software in bash script's comments
+Rename variables in roulette_algorithm.cpp
+Recreate and rename highfive.txt
+Rename gridsize.txt and delete upon loop completion
+
