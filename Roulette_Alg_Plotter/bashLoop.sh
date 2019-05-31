@@ -1,7 +1,7 @@
 
-totGens=15
-nPop=2
-dest=Run6_4.11.19_nPop1_mean500_std250
+totGens=20
+nPop=10
+dest=Run6_4.12.19_nPop10_mean500_std250
 gifName="MutMod10_nPop20_mean500_std250.gif"
 gifFPS=4
 
@@ -50,6 +50,6 @@ python3 makeGif.py $totGens 1 $gifFPS
 mkdir "$dest"
 find -maxdepth 1 -name FScore\* -exec mv -t $dest {} +
 
-mv myGifTest.gif "$dest/$gifName"
+mv myGif.gif "$dest/$gifName"
 
 echo "Finished Everything!"

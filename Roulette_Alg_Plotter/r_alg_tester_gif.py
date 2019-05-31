@@ -46,12 +46,12 @@ def Gaussian(indivs, mu, sigma, sigmaRatio, dim):
 def FitnessFunction(indivs):
 	sigma1 = 1
 	sigma2 = 1
-	sigmaRatio1 = 100
-	sigmaRatio2 = 100
-	mu1 = [1, 750, 1]
-	mu2 = [1, 250, 1]
+	sigmaRatio1 = 100*0.8
+	sigmaRatio2 = 100*0.8
+	mu1 = [2, 750, 1]
+	mu2 = [2, 250, 1]
 	mag1 = 20
-	mag2 = 20
+	mag2 = 10
 
 	f_Func = Gaussian(indivs, mu1, sigma1, sigmaRatio1, dimension)*mag1
 	f_Func += Gaussian(indivs, mu2, sigma2, sigmaRatio2, dimension)*mag2
@@ -75,13 +75,17 @@ def plotBackground(rng):
 
 	CP = ax.contourf(x, y, z, contourDetail)
 	ax.contour(CP, colors='k')
-	fig.colorbar(CP)
+	cbar = fig.colorbar(CP)
+	cbar.set_label('Fitness Score', size=18)
+	cbar.ax.tick_params(labelsize=18)
 
 	# Add titles and labels
-	ax.set_title("Fitness Function for Gen:"+str(g.genNumb))
+	ax.set_title("Fitness Function for Gen:"+str(g.genNumb), fontsize=22)
 	# Labels are x = radius, y = length, z = angle
-	ax.set_xlabel("radius")
-	ax.set_ylabel("length")
+	ax.set_xlabel("radius", fontsize=18)
+	ax.set_ylabel("length", fontsize=18)
+	ax.xaxis.set_tick_params(labelsize=20)
+	ax.yaxis.set_tick_params(labelsize=20)
 	# Return figure
 	return fig, ax
 

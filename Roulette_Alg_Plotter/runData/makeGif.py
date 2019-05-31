@@ -42,7 +42,7 @@ def merge_images(nameList):
 
 def make_gif(nameList):
     clip = mpy.ImageSequenceClip(nameList, fps=g.FPS)
-    clip.write_gif('myGifTest.gif', fps=g.FPS)
+    clip.write_gif('myGif.gif', fps=g.FPS)
 
 
 

@@ -1,25 +1,35 @@
 # Written by: 	Suren Gourapura
-# Written on: 	Dec 5, 2018
+# Written on: 	April 13, 2019
 # Purpose: 	Plot the fitness scores from each generation and the ones before. Give a 3D and 2D plot to the users and save the 2D plot to g.destinations
 
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import argparse
+# Allows for integer ticks in plot's x axis
+from matplotlib.ticker import MaxNLocator
+
 
 #---------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES----------GLOBAL VARIABLES
 
 # We need to grab the three arguments from the bash script or user. These arguments in order are [the name of the source folder of the fitness scores], [the name of the destination folder for the plots], and [the number of generations]
 parser = argparse.ArgumentParser()
 parser.add_argument("source", help="Name of source folder from home directory", type=str)
-parser.add_argument("destination", help="Name of destination folder from home directory", type=str)
-parser.add_argument("numGens", help="Number of generations the code is running for", type=int)
+parser.add_argument("destination", help="Name of destination folder from home directory (no end dash)", type=str)
+parser.add_argument("numGens", help="Number of generations the code is running for (no end dash)", type=int)
 g = parser.parse_args()
 
 # The name of the plot that will be put into the destination folder, g.destination
 Plot2D = "FScorePlot2D"
+Plot3D = "FScorePlot3D"
 
 #----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE----------DEFINITIONS HERE
+
+def AverageData(genVec, fVec):
+	avgGenVec = np.arange(g.numGens)
+	fMat = fVec.reshape((g.numGens, int(len(fVec)/g.numGens)))
+	return avgGenVec, fMat.mean(1)
+
 
 def plot3D(x1, x2, y):
 	# Plot the result using matplotlib
@@ -30,17 +40,27 @@ def plot3D(x1, x2, y):
 	ax.set_ylabel('Individuals')
 	ax.set_zlabel('Fitness Score')
 	ax.set_title('Fitness Scores over the Generations')
+	plt.savefig(g.destination+'/'+Plot3D)
 	plt.show()
 
-def plot2D(x1, y):
+def plot2D(genVec, fVec):
+	# Split data for each generation
+	avgGenVec, avgFVec = AverageData(genVec, fVec)
+
 	# Plot the result using matplotlib
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
-	ax.scatter(x1, y, color='g', marker='o')
-	ax.set_xlabel('Generation')
-	ax.set_ylabel('Fitness Score')
-	ax.set_title('Fitness Scores over the Generations 2D')
-	plt.savefig(g.destination+Plot2D)
+	ax.scatter(genVec, fVec, color='green', marker='o') # Plots each individual
+	#ax.scatter(avgGenVec, avgFVec, color='red', marker='o') # Plots average individual
+	ax.plot(avgGenVec, avgFVec, 'r-') # Plots line of average individuals
+	ax.set_xlabel('Generation', fontsize=18)
+	ax.set_ylabel('Fitness Score', fontsize=18)
+	ax.set_title('Fitness Scores over the Generations', fontsize=22)
+	ax.xaxis.set_tick_params(labelsize=20)
+	ax.yaxis.set_tick_params(labelsize=20)
+	ax.xaxis.set_major_locator(MaxNLocator(integer=True)) # Force integer ticks
+	
+	plt.savefig(g.destination+'/'+Plot2D)
 	plt.show()
 	
 
@@ -74,9 +94,7 @@ for i in range(fScores.shape[0]):
 		Indiv[j+i*fScores.shape[1]]=j
 		fScorePlot[j+i*fScores.shape[1]] = fScores[i,j]
 		
-plot3D(Gen, Indiv, fScorePlot)
+#plot3D(Gen, Indiv, fScorePlot)
 
 plot2D(Gen, fScorePlot)
-
-
 
